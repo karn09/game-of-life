@@ -37,7 +37,8 @@ var gameOfLife = {
     // go through each cell.. 
     for (var y = 0; y < this.height; y++) {
       for (var x = 0; x < this.width; x++) {
-        iteratorFunc(document.getElementById(x + '-' + y), x, y);
+        iteratorFunc.call(this, document.getElementById(x + '-' + y), x, y)
+          //      iteratorFunc();
       }
     }
   },
@@ -84,7 +85,13 @@ var gameOfLife = {
   },
 
   reset: function() {
-
+    var dOA, status;
+    this.forEachCell(function(cell) {
+      dOA = Math.floor(Math.random() * 2);
+      status = dOA === 1 ? 'dead' : 'alive';
+      cell.className = status;
+      cell.setAttribute('data-store', status);
+    })
   },
 
   clear: function() {
@@ -133,7 +140,7 @@ var gameOfLife = {
     }
     return numberAlive;
   },
-  
+
   _setFuture: function(cell, aliveNeighbors) {
     // Any live cell with two or three live neighbors lives on to the next generation.
     // Any live cell with fewer than two live neighbors dies, as if caused by under-population.
@@ -170,7 +177,7 @@ var gameOfLife = {
     this.forEachCell(function(cell, x, y) {
 
       aliveCells[x + '-' + y] = this._checkNeighbors(cell, x, y);
-    }.bind(this))
+    })
 
 
     // set alivecell count on object
@@ -187,7 +194,7 @@ var gameOfLife = {
     // You need to:
     // 1. Count alive neighbors for all cells
 
-      // 2. Set the next state of all cells based on their alive neighbors
+    // 2. Set the next state of all cells based on their alive neighbors
     for (var key in aliveCells) {
       this._setFuture(key, aliveCells[key].alive);
     }
@@ -199,9 +206,10 @@ var gameOfLife = {
     var interval;
     if (set) {
       console.log('helloo..')
-      interval = setInterval(this.step.bind(this),500)
-      //set = true;
-    } else {
+      interval = setInterval(this.step.bind(this), 500)
+        //set = true;
+    }
+    else {
       clearInterval(interval);
     }
 
